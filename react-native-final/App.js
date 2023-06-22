@@ -343,57 +343,24 @@ function LoginScreen() {
 const Stack = createNativeStackNavigator();
 
 function MainApp() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('accessToken');
-        if (token) {
-          setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error('Error checking login status:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {isLoggedIn ? (
-          <>
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={({ navigation }) => ({
-                headerRight: () => (
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('MyCart')}
-                  >
-                    <Text>My Cart</Text>
-                  </TouchableOpacity>
-                ),
-              })}
-            />
-            <Stack.Screen name="MyCart" component={MyCartScreen} />
-          </>
-        ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
-        )}
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={({ navigation }) => ({
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('MyCart')}
+              >
+                <Text>My Cart</Text>
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen name="MyCart" component={MyCartScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
