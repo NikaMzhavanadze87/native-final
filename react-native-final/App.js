@@ -206,7 +206,7 @@ function HomeScreen() {
     fetchData();
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = async ({navigation}) => {
     
     await AsyncStorage.removeItem('accessToken');
     
