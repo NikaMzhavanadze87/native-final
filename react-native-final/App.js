@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useState, useEffect} from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, ScrollView } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import axios from 'axios';
@@ -17,39 +17,110 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     padding: 10,
-    borderRadius:8,
+    borderRadius: 8,
   },
   button: {
     backgroundColor: 'black',
     borderRadius: 8,
     padding: 10,
-    width:90,
-    
-    
+    width: 90,
   },
   buttonText: {
     color: 'white',
-    fontSize:20,
-    textAlign:'center'
-    
+    fontSize: 20,
+    textAlign: 'center',
   },
   errorText: {
     color: 'red',
-    marginTop: 20, 
+    marginTop: 20,
+  },
+  productContainer: {
+    backgroundColor:'white',
+    marginBottom: 10,
+    padding:20,
+  },
+  imageContainer: {
+    width: '100%',
+    aspectRatio: 1, 
+    marginBottom: 10,
+  },
+  productImage: {
+    flex: 1,
+    width: '100%',
+    resizeMode: 'cover', 
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  productPrice: {
+    fontSize: 14,
+    marginTop: 5,
+  },
+  addToCartButton: {
+    backgroundColor: 'black',
+    borderRadius: 8,
+    padding: 10,
+    width: 120,
+    marginTop: 10,
+  },
+  addToCartButtonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
 function HomeScreen() {
-  const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
 
-  const handleHeaderButtonPress = () => {
-    navigation.navigate('MyCart');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          'https://api.vendoo.ge/api/beta/catalog?url=technics%2Fkompiuteruli-teqnika%2Fnoutbuqebi-da-misi-aqsesuarebi&sort=popular&sortDir=desc&page=1&limit=20'
+        );
+        const data = response.data.products;
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleAddToCart = (productId) => {
+    // Implement your logic for adding the product to the cart
+    console.log('Product added to cart:', productId);
   };
 
+  
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        {products.map((product) => (
+          <View key={product.id} style={styles.productContainer}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: product.thumb_img.files.webp }}
+                style={styles.productImage}
+              />
+            </View>
+            <Text style={styles.productName}>{product.name}</Text>
+            <Text style={styles.productPrice}>Price: {product.original_price}</Text>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={() => handleAddToCart(product.id)}
+            >
+              <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 
@@ -86,10 +157,10 @@ function LoginScreen() {
 
       const token = response.data.data.access_token;
 
-      // Store the token using AsyncStorage
+      
       await AsyncStorage.setItem('accessToken', token);
 
-      // Perform navigation logic to the desired screen
+      
       navigation.navigate('Home');
     } catch (error) {
       setError('Your email or password is incorrect');
