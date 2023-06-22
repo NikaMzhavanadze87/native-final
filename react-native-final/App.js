@@ -206,8 +206,18 @@ function HomeScreen() {
     fetchData();
   }, []);
 
+  const handleLogout = async () => {
+    
+    await AsyncStorage.removeItem('accessToken');
+    
+    navigation.navigate('Login');
+  };
+
   return (
     <ScrollView>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       <View style={styles.container}>
         {products.map((product) => (
           <View key={product.id} style={styles.productContainer}>
@@ -311,7 +321,7 @@ function LoginScreen() {
 
       await AsyncStorage.setItem('accessToken', token);
 
-      navigation.navigate('Home');
+      navigation.replace('Home');
     } catch (error) {
       setError('Your email or password is incorrect');
     }
